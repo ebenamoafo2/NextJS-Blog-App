@@ -1,14 +1,11 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "./generated"
-  
 }
 
 datasource db {
   provider = "postgresql"
 }
-
 
 model BlogPost {
   id          String @id @default(uuid())
