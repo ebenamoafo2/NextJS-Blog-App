@@ -40,7 +40,7 @@ export function Navbar() {
 
       {user ? (
         <div className="flex items-center gap-4">
-          <p className="text-sm font-medium">{user.email}</p>
+          <p className="text-sm font-medium">{user.picture}</p>
           <LogoutLink className={buttonVariants({ variant: "secondary" })}>
             Logout
           </LogoutLink>
