@@ -16,7 +16,7 @@ export async function Navbar() {
       <div className="flex items-center gap-6">
         <Link href="/">
           <h1 className="text-3xl font-semibold">
-            Blog<span className="text-blue-500">Marshal</span>
+            Byte<span className="text-blue-500">Blog</span>
           </h1>
         </Link>
 
