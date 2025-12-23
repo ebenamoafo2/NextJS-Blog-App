@@ -21,12 +21,12 @@ export async function Navbar() {
         </Link>
 
         <div className="hidden sm:flex items-center gap-6">
-          <Link
+          {/* <Link
             className="text-sm font-medium hover:text-blue-500 transition-colors"
             href="/"
           >
             Home
-          </Link>
+          </Link> */}
           <Link
             className="text-sm font-medium hover:text-blue-500 transition-colors"
             href="/dashboard"

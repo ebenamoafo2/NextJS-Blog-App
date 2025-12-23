@@ -1,6 +1,11 @@
+import { BlogPostCard } from "@/components/general/BlogPostCard";
 import { prisma } from "./utils/db";
+import { Suspense } from "react";
+import LoadingDashboard from "./dashboard/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 
 async function getData() {
+  await new Promise(resolve => setTimeout(resolve, 2000)); // simulate delay
   const data = await prisma.blogPost.findMany({
     select: {
       title: true,
@@ -10,26 +15,72 @@ async function getData() {
       authorName: true,
       id: true,
       createdAt: true,
+      authorId: true,
+      updatedAt: true,
     },
   });
-
   return data;
 }
 
-export default async function Home() {
+// Client wrapper to enable Suspense fallback
+export default function Home() {
+  return (
+    <Suspense fallback={<BlogPostsGrid />}>
+      {/* BlogPost must be async server component */}
+      <BlogPost />
+    </Suspense>
+  );
+}
+
+// Async server component for blog posts
+async function BlogPost() {
   const data = await getData();
+
   return (
     <div className="py-6">
-      <h1 className="text-3xl font-bold underline">Welcome to the Blog App!</h1>
+      <h1 className="text-3xl font-bold mb-4">Latest Posts</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Blog post previews will go here */}
         {data.map(item => (
-          <div key={item.title} className="border p-4 rounded shadow">
-            <h2 className="text-xl font-semibold">{item.title}</h2>
-            <p className="mt-2">{item.content}</p>
-          </div>
+          <BlogPostCard data={item} key={item.id} />
         ))}
       </div>
+    </div>
+  );
+}
+
+// Blog posts grid with loading state
+function BlogPostsGrid() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div
+          className="rounded-lg border bg-card text-card-foreground shadow-sm h-[400px] flex flex-col overflow-hidden"
+          key={index}
+        >
+          {/* Image skeleton */}
+          <Skeleton className="h-48 w-full rounded-none" />
+
+          <div className="p-4 flex-1 flex flex-col gap-3">
+            {/* Title skeleton */}
+            <Skeleton className="h-6 w-3/4" />
+
+            {/* Content skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+
+            {/* Footer skeleton */}
+            <div className="mt-auto flex items-center justify-between pt-4">
+              <div className="flex items-center">
+                <Skeleton className="h-8 w-8 rounded-full mr-2" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-4 w-16" />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
