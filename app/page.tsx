@@ -1,8 +1,9 @@
 import { BlogPostCard } from "@/components/general/BlogPostCard";
 import { prisma } from "./utils/db";
 import { Suspense } from "react";
-import LoadingDashboard from "./dashboard/loading";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export const revalidate = 60; // disable caching for dynamic content
 
 async function getData() {
   await new Promise(resolve => setTimeout(resolve, 2000)); // simulate delay

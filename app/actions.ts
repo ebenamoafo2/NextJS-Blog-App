@@ -28,6 +28,6 @@ export async function handleSubmission(formData: FormData) {
     },
   });
 
-  revalidatePath("/");
+  revalidatePath("/"); // revalidate the home page to show the new post
   return redirect("/dashboard");
 }
