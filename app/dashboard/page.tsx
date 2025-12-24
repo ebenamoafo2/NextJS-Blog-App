@@ -4,6 +4,7 @@ import { prisma } from "../utils/db";
 import { redirect } from "next/navigation";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { BlogPostCard } from "@/components/general/BlogPostCard";
+import { SquarePen } from "lucide-react";
 
 async function getData(userId: string) {
   await new Promise(resolve => setTimeout(resolve, 2000));
@@ -30,10 +31,14 @@ export default async function Dashboard() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-medium">Your Blog Articles</h2>
+        <h2 className="text-xl font-medium">Featured</h2>
 
-        <Link href="/dashboard/create" className={buttonVariants()}>
-          Create Post
+        <Link
+          href="/dashboard/create"
+          className={buttonVariants({ variant: "secondary" })}
+        >
+          <SquarePen className="mr-2 h-4 w-4" />
+          Write
         </Link>
       </div>
 

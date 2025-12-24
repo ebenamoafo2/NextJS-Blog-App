@@ -8,7 +8,7 @@ import {
   LogoutLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { Menu, X } from "lucide-react";
+import { CircleGauge, House, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
@@ -76,10 +76,19 @@ export function Navbar() {
       >
         <div className="flex flex-col gap-4 pb-4">
           <Link
-            className="text-sm font-medium hover:text-blue-500 transition-colors"
+            className="text-sm font-medium hover:text-blue-500 transition-colors flex items-center gap-2"
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <House size={15} />
+            Home
+          </Link>
+          <Link
+            className="text-sm font-medium hover:text-blue-500 transition-colors flex items-center gap-2"
             href="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
           >
+            <CircleGauge size={15} />
             Dashboard
           </Link>
 
