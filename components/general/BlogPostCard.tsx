@@ -1,5 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import { DeleteButton } from "../general/DeleteButton";
 
 interface IappProps {
   data: {
@@ -13,9 +18,10 @@ interface IappProps {
     createdAt: Date;
     updatedAt: Date;
   };
+  showEdit?: boolean;
 }
 
-export function BlogPostCard({ data }: IappProps) {
+export function BlogPostCard({ data, showEdit = false }: IappProps) {
   return (
     <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all hover:shadow-lg">
       <Link href={`/post/${data.id}`} className="block w-full h-full">
@@ -62,6 +68,19 @@ export function BlogPostCard({ data }: IappProps) {
           </div>
         </div>
       </Link>
+
+      {showEdit && (
+        <div className="absolute top-2 right-2 z-10 flex gap-2">
+          <Link
+            href={`/dashboard/edit/${data.id}`}
+            className={buttonVariants({ variant: "secondary", size: "sm" })}
+            onClick={e => e.stopPropagation()}
+          >
+            <Pencil className="h-4 w-4" />
+          </Link>
+          <DeleteButton postId={data.id} />
+        </div>
+      )}
     </div>
   );
 }
