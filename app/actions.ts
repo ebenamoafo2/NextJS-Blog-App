@@ -4,8 +4,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { prisma } from "./utils/db";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { postSchema, type FormState } from "@/lib/zodSchemas";
 
-export async function handleSubmission(formData: FormData) {
+export async function handleSubmission(prevState: FormState, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -13,15 +14,28 @@ export async function handleSubmission(formData: FormData) {
     return redirect("/api/auth/register");
   }
 
-  const title = formData.get("title");
-  const content = formData.get("content");
-  const url = formData.get("url");
+  const rawData = {
+    title: formData.get("title"),
+    content: formData.get("content"),
+    imageUrl: formData.get("imageUrl"),
+  };
+
+  const validatedData = postSchema.safeParse(rawData);
+
+  // If any form fields are invalid, return early
+  if (!validatedData.success) {
+    return {
+      errors: validatedData.error.flatten().fieldErrors,
+    }
+  }
+// If validation succeeds, proceed with your logic
+  const { title, content, imageUrl } = validatedData.data;
 
   await prisma.blogPost.create({
     data: {
-      title: title as string,
-      content: content as string,
-      imageUrl: url as string,
+      title,
+      content,
+      imageUrl,
       authorId: user.id,
       authorImage: user.picture as string,
       authorName: user.given_name as string,
@@ -33,16 +47,29 @@ export async function handleSubmission(formData: FormData) {
 }
 
 // Update Posts
-export async function updatePost(formData: FormData) {
+export async function updatePost(prevState: FormState, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) throw new Error("Unauthorized");
 
   const id = formData.get("id") as string;
-  const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
-  const imageUrl = formData.get("imageUrl") as string;
+  
+  const rawData = {
+    title: formData.get("title"),
+    content: formData.get("content"),
+    imageUrl: formData.get("imageUrl"),
+  };
+
+  const validatedData = postSchema.safeParse(rawData);
+
+  if (!validatedData.success) {
+    return {
+      errors: validatedData.error.flatten().fieldErrors,
+    };
+  }
+
+  const { title, content, imageUrl } = validatedData.data;
 
   const post = await prisma.blogPost.findUnique({
     where: { id },

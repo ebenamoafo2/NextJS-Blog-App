@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { BlogPost } from "../../prisma/generated";
+import { BlogPost } from "@/prisma/generated";
 import { updatePost } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
+import { FormState } from "@/lib/zodSchemas";
 
 type EditPostFormProps = {
   post: BlogPost;
@@ -26,6 +27,7 @@ function SubmitButton() {
 }
 
 export default function EditPostForm({ post }: EditPostFormProps) {
+  const [state, action] = useActionState<FormState, FormData>(updatePost, undefined);
   const [title, setTitle] = useState(post.title);
   const [content, setContent] = useState(post.content);
   const [imageUrl, setImageUrl] = useState(post.imageUrl);
@@ -34,7 +36,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Post</h1>
 
-      <form action={updatePost} className="space-y-6">
+      <form action={action} className="space-y-6">
         <input type="hidden" name="id" value={post.id} />
 
         <div className="space-y-2">
@@ -47,6 +49,9 @@ export default function EditPostForm({ post }: EditPostFormProps) {
             placeholder="Enter your post title"
             required
           />
+          {state?.errors?.title && (
+            <p className="text-red-500 text-sm">{state.errors.title[0]}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -60,6 +65,9 @@ export default function EditPostForm({ post }: EditPostFormProps) {
             rows={10}
             required
           />
+          {state?.errors?.content && (
+            <p className="text-red-500 text-sm">{state.errors.content[0]}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -73,6 +81,9 @@ export default function EditPostForm({ post }: EditPostFormProps) {
             type="url"
             required
           />
+          {state?.errors?.imageUrl && (
+            <p className="text-red-500 text-sm">{state.errors.imageUrl[0]}</p>
+          )}
           {imageUrl && (
             <Image
               src={imageUrl}
