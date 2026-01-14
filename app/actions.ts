@@ -4,9 +4,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { prisma } from "./utils/db";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { postSchema, type FormState } from "@/lib/zodSchemas";
+import {postSchema, type FormState, PostInput} from "@/lib/zodSchemas";
 
-export async function handleSubmission(prevState: FormState, formData: FormData) {
+export async function handleSubmission(values: PostInput) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -14,22 +14,25 @@ export async function handleSubmission(prevState: FormState, formData: FormData)
     return redirect("/api/auth/register");
   }
 
-  const rawData = {
-    title: formData.get("title"),
-    content: formData.get("content"),
-    imageUrl: formData.get("imageUrl"),
-  };
-
-  const validatedData = postSchema.safeParse(rawData);
+  // const rawData = {
+  //   // title: formData.get("title"),
+  //   // content: formData.get("content"),
+  //   // imageUrl: formData.get("imageUrl"),
+  // };
+//validate the data
+  const validatedData = postSchema.safeParse(values);
 
   // If any form fields are invalid, return early
   if (!validatedData.success) {
     return {
-      errors: validatedData.error.flatten().fieldErrors,
+      status: "error",
+      message: validatedData.error.message,
     }
   }
 // If validation succeeds, proceed with your logic
   const { title, content, imageUrl } = validatedData.data;
+
+
 
   await prisma.blogPost.create({
     data: {
@@ -88,7 +91,6 @@ export async function updatePost(prevState: FormState, formData: FormData) {
 }
 
 // Delete Post
-
 export async function deletePost(formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();

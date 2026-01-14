@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 import { Loader } from "lucide-react";
 
 export function SubmitButton() {
-  const { pending } = useFormStatus(); // tracks if form is submitting
+  const { pending } = useFormStatus(); // tracks if the form is submitting
 
   return (
     <Button className="w-fit" type="submit" disabled={pending}>

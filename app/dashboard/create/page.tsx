@@ -10,13 +10,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useActionState } from "react";
-import { FormState } from "@/lib/zodSchemas";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import { PostInput, postSchema} from "@/lib/zodSchemas";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 export default function CreateBlogroute() {
-  const [state, action] = useActionState<FormState, FormData>(handleSubmission, undefined);
+const form = useForm <PostInput>({
+  resolver: zodResolver(postSchema), //To validate all of the data against the Zod schema
+  defaultValues: {
+    title: "",
+    content: "",
+    imageUrl: ""
+  }
+})
+
+  async function onSubmit(values: PostInput) {
+  await handleSubmission(values)
+}
 
   return (
     <div>
@@ -28,39 +40,57 @@ export default function CreateBlogroute() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-col gap-4" action={action}>
-            <div className="flex flex-col gap-2">
-              <Label>Title</Label>
-              <Input name="title" required type="text" placeholder="Title" />
-              {state?.errors?.title && (
-                <p className="text-red-500 text-sm">{state.errors.title[0]}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Content</Label>
-              <Textarea name="content" required placeholder="Content" />
-              {state?.errors?.content && (
-                <p className="text-red-500 text-sm">{state.errors.content[0]}</p>
-              )}
-            </div>
+          <Form {...form}>
+            <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} >
 
-            <div className="flex flex-col gap-2">
-              <Label>Image URL</Label>
-              <Input
-                name="imageUrl"
-                required
-                type="url"
-                placeholder="Image url"
+              <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your Title" {...field} />
+                        </FormControl>
+                        <FormDescription>Please enter your title</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                  )}
               />
-              {state?.errors?.imageUrl && (
-                <p className="text-red-500 text-sm">
-                  {state.errors.imageUrl[0]}
-                </p>
-              )}
-            </div>
 
-            <SubmitButton />
-          </form>
+              <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Content</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Content" {...field} />
+                        </FormControl>
+                        <FormDescription>Please enter your description</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                  )}
+              />
+
+              <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Image URL</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Image Url" {...field} />
+                        </FormControl>
+                        <FormDescription>Enter the image url</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                  )}
+              />
+
+              <SubmitButton />
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
